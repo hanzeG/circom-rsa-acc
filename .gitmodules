@@ -6,3 +6,6 @@
 	path = circom-ecdsa
 	url = https://github.com/agnxsh/circom-ecdsa.git
 	branch = 0xagnish/circom_tester-fix
+[submodule "blockchain_ZKPs"]
+	path = blockchain_ZKPs
+	url = https://github.com/badblood8/blockchain_ZKPs.git
