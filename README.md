@@ -11,7 +11,8 @@ The circuit templates under the circuits directory currently support functionali
 To run the circuit test cases:
 
 ```sh
-git submodule update --init --recursive; cd blockchain_ZKPs; npm i; cd ..; npm i; npm test
+git submodule update --init --recursive
+cd blockchain_ZKPs; npm i; cd ..; npm i; npm test
 ```
 
 [blockchain_ZKP]((https://github.com/badblood8/blockchain_ZKPs)) is a library implemented in Circom for primality testing algorithms, and [circom-ecdsa](https://github.com/0xPARC/circom-ecdsa) provides circuit templates for modular exponentiation of large integers with fixed exponent sizes (non-input signals), among other functionalities.
