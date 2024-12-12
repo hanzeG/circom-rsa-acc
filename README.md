@@ -12,6 +12,8 @@ To run the circuit test cases:
 
 ```sh
 git submodule update --init --recursive
+```
+```sh
 cd blockchain_ZKPs; npm i; cd ..; npm i; npm test
 ```
 
