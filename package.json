@@ -8,7 +8,8 @@
     },
     "scripts": {
         "test": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/**/*.js'",
-        "test_2048": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_2048_128.js'"
+        "test_2048": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_2048.js'",
+        "test_1024": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_1024.js'"
     },
     "keywords": [
         "rsa",

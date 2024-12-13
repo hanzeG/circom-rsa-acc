@@ -21,7 +21,22 @@ cd blockchain_ZKPs; npm i; cd ..; npm i; npm test
 
 ## Circuits Benchmark
 
-Environment: Mac (Apple M1 Pro, 2021), 10-core CPU, 16GB RAM
+* Mac (Apple M1 Pro, 2021), 10-core CPU, 16GB RAM
+<!-- * Proof system: Groth16 -->
 
-Currently being updated…
+| Test Case               | Template Instances | Non-linear Constraints | Linear Constraints | Public Inputs | Private Inputs           | Public Outputs | Wires     | Labels    |
+| ----------------------- | ------------------ | ---------------------- | ------------------ | ------------- | ------------------------ | -------------- | --------- | --------- |
+| spend.circom            | 101                | 6,147,001              | 1                  | 0             | 143                      | 1              | 6,105,363 | 6,760,823 |
+|                         |
+| verify_wtns.circom      | 24                 | 6,118,977              | 1                  | 0             | 97                       | 1              | 6,077,315 | 6,722,533 |
+|                         |
+| pow_mod_1024_64.circom  | 22                 | 1,533,729              | 0                  | 0             | 33                       | 16             | 1,523,138 | 1,685,955 |
+|                         |
+| pow_mod_1024_128.circom | 23                 | 3,067,489              | 0                  | 0             | 33                       | 16             | 3,046,274 | 3,371,843 |
+|                         |
+| pow_mod_2048_64.circom  | 22                 | 3,059,457              | 0                  | 0             | 65                       | 32             | 3,038,658 | 3,361,283 |
+|                         |
+| pow_mod_2048_128.circom | 23                 | 6,118,977              | 0                  | 0             | 65                       | 32             | 6,077,314 | 6,722,435 |
+|                         |
+| primality.circom        | 3                  | 6,414                  | 0                  | 6             | 2 (1 belongs to witness) | 1              | 6,382     | 26,095    |
 
