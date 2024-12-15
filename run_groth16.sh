@@ -5,12 +5,15 @@ PROOF_SYS=(
 )
 
 CIRCUIT_NAMES=(
+    "test/circuits/inTransfer_2048_const_65537"
+    # "test/circuits/pow_mod_1024_const_65537"
+    # "test/circuits/pow_mod_2048_const_65537"
     # "test/circuits/spend"
     # "test/circuits/verify_wtns"
     # "test/circuits/pow_mod_1024_64"
     # "test/circuits/pow_mod_1024_128"
     # "test/circuits/pow_mod_2048_64"
-    "test/circuits/pow_mod_2048_128"
+    # "test/circuits/pow_mod_2048_128"
     # "test/circuits/primality"
 )
 
@@ -20,8 +23,20 @@ TARGET_DIR="$SCRIPT_DIR/.target"
 for PROOF_SY in "${PROOF_SYS[@]}"
 do
     for CIRCUIT_NAME in "${CIRCUIT_NAMES[@]}"
-    do
+        do
         case $CIRCUIT_NAME in
+            "test/circuits/inTransfer_2048_const_65537")
+                PTAU_NAME="pot21_final"
+                INPUT_NAME="inTransfer_2048_const_65537"
+                ;;
+            "test/circuits/pow_mod_1024_const_65537")
+                PTAU_NAME="pot19_final"
+                INPUT_NAME="pow_mod_1024_const_65537"
+                ;;
+            "test/circuits/pow_mod_2048_const_65537")
+                PTAU_NAME="pot20_final"
+                INPUT_NAME="pow_mod_2048_const_65537"
+                ;;
             "test/circuits/spend")
                 PTAU_NAME="pot23_final"
                 INPUT_NAME="spend"
