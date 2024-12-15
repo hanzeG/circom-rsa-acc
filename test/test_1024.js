@@ -201,32 +201,70 @@ function generateRabinMillerInput(N, k) {
 //     });
 // });
 
-describe("Test pow_mod_64.circom: pow_mod for random 1024-bit N, 64-bit x", function () {
+// describe("Test pow_mod_64.circom: pow_mod for random 1024-bit N, 64-bit x", function () {
+//     this.timeout(1000 * 1000);
+
+//     let circuit;
+//     let racc;
+
+//     before(async function () {
+//         circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_1024_64.circom"));
+//         // Initialize RSA accumulator with specified bit lengths (N = 1024 bits)
+//         // x should be less than F
+//         racc = await bsrpRAcc.initialize(1024, 512, 512, 64);
+//     });
+
+//     it("should calculate (g^x) % N correctly", async function () {
+//         const g_array = bigint_to_array(64, 16, racc.g);
+//         const n_array = bigint_to_array(64, 16, racc.N);
+//         const result_array = bigint_to_array(64, 16, racc.A);
+
+//         const input = {
+//             base: g_array,
+//             exp: racc.secret,
+//             modulus: n_array
+//         };
+
+//         // Save the input object to a JSON file at relative path "../circuit_input"
+//         const outputPath = path.join(__dirname, "../circuit_input/pow_mod_1024_64.json");
+//         fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
+
+//         const witness = await circuit.calculateWitness(input);
+
+//         for (let i = 0; i < 16; i++) {
+//             expect(witness[i + 1]).to.equal(result_array[i]);
+//         }
+//         await circuit.checkConstraints(witness);
+//     });
+// });
+
+describe("Test pow_mod_const_65537.circom: pow_mod for random 1024-bit N, 17-bit x = 65537", function () {
     this.timeout(1000 * 1000);
 
     let circuit;
     let racc;
 
     before(async function () {
-        circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_1024_64.circom"));
+        circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_1024_const_65537.circom"));
         // Initialize RSA accumulator with specified bit lengths (N = 1024 bits)
         // x should be less than F
-        racc = await bsrpRAcc.initialize(1024, 512, 512, 64);
+        racc = await bsrpRAcc.initialize(1024, 512, 512, 17);
     });
 
     it("should calculate (g^x) % N correctly", async function () {
-        const g_array = bigint_to_array(64, 16, racc.g);
+        const g_array = bigint_to_array(64, 16, racc.A);
         const n_array = bigint_to_array(64, 16, racc.N);
+        racc.accumulate(65537n);
         const result_array = bigint_to_array(64, 16, racc.A);
 
         const input = {
             base: g_array,
-            exp: racc.secret,
+            exp: 65537n,
             modulus: n_array
         };
 
         // Save the input object to a JSON file at relative path "../circuit_input"
-        const outputPath = path.join(__dirname, "../circuit_input/pow_mod_1024_64.json");
+        const outputPath = path.join(__dirname, "../circuit_input/pow_mod_1024_const_65537.json");
         fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
 
         const witness = await circuit.calculateWitness(input);

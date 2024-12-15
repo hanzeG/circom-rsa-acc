@@ -164,42 +164,42 @@ function generateRabinMillerInput(N, k) {
 //     });
 // });
 
-describe("Test pow_mod_128.circom: pow_mod for random 2048-bit N, 128-bit x", function () {
-    this.timeout(1000 * 1000);
+// describe("Test pow_mod_128.circom: pow_mod for random 2048-bit N, 128-bit x", function () {
+//     this.timeout(1000 * 1000);
 
-    let circuit;
-    let racc;
+//     let circuit;
+//     let racc;
 
-    before(async function () {
-        circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_2048_128.circom"));
-        // Initialize RSA accumulator with specified bit lengths (N = 2048 bits)
-        // x should be less than F
-        racc = await bsrpRAcc.initialize(2048, 1024, 1024, 128);
-    });
+//     before(async function () {
+//         circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_2048_128.circom"));
+//         // Initialize RSA accumulator with specified bit lengths (N = 2048 bits)
+//         // x should be less than F
+//         racc = await bsrpRAcc.initialize(2048, 1024, 1024, 128);
+//     });
 
-    it("should calculate (g^x) % N correctly", async function () {
-        const g_array = bigint_to_array(64, 32, racc.g);
-        const n_array = bigint_to_array(64, 32, racc.N);
-        const result_array = bigint_to_array(64, 32, racc.A);
+//     it("should calculate (g^x) % N correctly", async function () {
+//         const g_array = bigint_to_array(64, 32, racc.g);
+//         const n_array = bigint_to_array(64, 32, racc.N);
+//         const result_array = bigint_to_array(64, 32, racc.A);
 
-        const input = {
-            base: g_array,
-            exp: racc.secret,
-            modulus: n_array
-        };
+//         const input = {
+//             base: g_array,
+//             exp: racc.secret,
+//             modulus: n_array
+//         };
 
-        // Save the input object to a JSON file at relative path "../circuit_input"
-        const outputPath = path.join(__dirname, "../circuit_input/pow_mod_2048_128.json");
-        fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
+//         // Save the input object to a JSON file at relative path "../circuit_input"
+//         const outputPath = path.join(__dirname, "../circuit_input/pow_mod_2048_128.json");
+//         fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
 
-        const witness = await circuit.calculateWitness(input);
+//         const witness = await circuit.calculateWitness(input);
 
-        for (let i = 0; i < 32; i++) {
-            expect(witness[i + 1]).to.equal(result_array[i]);
-        }
-        await circuit.checkConstraints(witness);
-    });
-});
+//         for (let i = 0; i < 32; i++) {
+//             expect(witness[i + 1]).to.equal(result_array[i]);
+//         }
+//         await circuit.checkConstraints(witness);
+//     });
+// });
 
 // describe("Test pow_mod_64.circom: pow_mod for random 2048-bit N, 64-bit x", function () {
 //     this.timeout(1000 * 1000);
@@ -227,6 +227,44 @@ describe("Test pow_mod_128.circom: pow_mod for random 2048-bit N, 128-bit x", fu
 
 //         // Save the input object to a JSON file at relative path "../circuit_input"
 //         const outputPath = path.join(__dirname, "../circuit_input/pow_mod_64.json");
+//         fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
+
+//         const witness = await circuit.calculateWitness(input);
+
+//         for (let i = 0; i < 32; i++) {
+//             expect(witness[i + 1]).to.equal(result_array[i]);
+//         }
+//         await circuit.checkConstraints(witness);
+//     });
+// });
+
+// describe("Test pow_mod_const_65537.circom: pow_mod for random 2048-bit N, 17-bit x = 65537", function () {
+//     this.timeout(1000 * 1000);
+
+//     let circuit;
+//     let racc;
+
+//     before(async function () {
+//         circuit = await wasm_tester(path.join(__dirname, "circuits", "pow_mod_2048_const_65537.circom"));
+//         // Initialize RSA accumulator with specified bit lengths (N = 2048 bits)
+//         // x should be less than F
+//         racc = await bsrpRAcc.initialize(2048, 1024, 1024, 17);
+//     });
+
+//     it("should calculate (g^x) % N correctly", async function () {
+//         const g_array = bigint_to_array(64, 32, racc.A);
+//         const n_array = bigint_to_array(64, 32, racc.N);
+//         racc.accumulate(65537n);
+//         const result_array = bigint_to_array(64, 32, racc.A);
+
+//         const input = {
+//             base: g_array,
+//             exp: 65537n,
+//             modulus: n_array
+//         };
+
+//         // Save the input object to a JSON file at relative path "../circuit_input"
+//         const outputPath = path.join(__dirname, "../circuit_input/pow_mod_2048_const_65537.json");
 //         fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
 
 //         const witness = await circuit.calculateWitness(input);
@@ -378,3 +416,106 @@ describe("Test pow_mod_128.circom: pow_mod for random 2048-bit N, 128-bit x", fu
 //         await circuit.checkConstraints(witness);
 //     });
 // });
+
+describe("Test inTransfer_2048_const_65537.circom: pow_mod for random 2048-bit N, 17-bit x = 65537", function () {
+    this.timeout(1000 * 1000);
+
+    let circuit;
+    let raccSpent;
+    let raccMint;
+
+    before(async function () {
+        circuit = await wasm_tester(path.join(__dirname, "circuits", "inTransfer_2048_const_65537.circom"));
+        // Initialize RSA accumulator with specified bit lengths (N = 2048 bits)
+        // x should be less than F
+        raccSpent = await bsrpRAcc.initialize(2048, 1024, 1024, 17);
+        raccMint = await bsrpRAcc.initialize(2048, 1024, 1024, 17);
+    });
+
+    it("should Alice spend old UTXO and mint new UTXO for Charles successfully", async function () {
+        const mba = await prime(2048);
+        const cba = modPow(mba, 65537n, raccSpent.N)
+        // Alice generates a proof (witness) that she can spend the commitment
+        const proof = modPow(cba, modInv(65537n, raccSpent.phiN), raccSpent.N);
+        // Verify the proof in plain (non-circuit)
+        // const verification = modPow(proof, 65537n, raccSpent.N) === cba;
+        const verification = proof === mba;
+        console.log("Verification result:", verification);
+
+        // Simulate an incremental Merkle tree
+        const depth = 20;
+        const zeroValue = 513;
+        const mimcSponge = await buildMimcSponge();
+        const F1 = mimcSponge.F;
+        // Initialize an incremental Merkle tree with depth and initial value
+        let elementPath = new Array(depth).fill(0);
+        let indexPath = new Array(depth).fill(0);
+        let tmp = zeroValue;
+        for (let i = 0; i < depth; i++) {
+            elementPath[i] = tmp;
+            tmp = F1.toObject(mimcSponge.multiHash([tmp, tmp], 0, 1));
+            i++;
+        }
+
+        const spendN_array = bigint_to_array(64, 32, raccSpent.N);
+        const spendM_array = bigint_to_array(64, 32, proof);
+        const spendC_array = bigint_to_array(64, 32, cba);
+
+        // Update the Merkle tree with Bob's new commitment and get the new root hash
+        tmp = F1.toObject(mimcSponge.multiHash([spendC_array[0], spendC_array[1]], 0, 1));
+        for (let i = 0; i < indexPath.length; i++) {
+            if (indexPath[i] === 0) {
+                tmp = F1.toObject(mimcSponge.multiHash([tmp, elementPath[i]], 0, 1));
+            } else {
+                tmp = F1.toObject(mimcSponge.multiHash([elementPath[i], tmp], 0, 1));
+            }
+        }
+        let root = tmp;
+
+        // Calculate nullifier hash using Poseidon hash
+        const poseidonHash = await buildPoseidon(); // Initialize Poseidon hash function
+        const F2 = poseidonHash.F; // Finite field used by Poseidon
+        const nullifier = [spendM_array[0], spendM_array[1]];
+        const nullifierHash = F2.toObject(poseidonHash(nullifier));
+        console.log("Nullifier Hash:", nullifierHash);
+
+        // Alice generates a new message for Charles
+        const mac = await prime(2048);
+        // Alice accumulates m into the accumulator and generates a commitment secretly
+        const cac = modPow(mac, 65537n, raccMint.N);
+
+        const mintN_array = bigint_to_array(64, 32, raccMint.N);
+        const mintM_array = bigint_to_array(64, 32, mac);
+        const mintC_array = bigint_to_array(64, 32, cac);
+
+        const input = {
+            mintM: mintM_array,
+            mintN: mintN_array,
+            mintE: 65537n,
+            spendN: spendN_array,
+            spendM: spendM_array,
+            spendE: 65537n,
+            spendC: spendC_array,
+            nullifierHash: nullifierHash,
+
+            root: root,
+            pathElements: elementPath,
+            pathIndices: indexPath,
+
+            receipt: 0,
+            relayer: 0,
+            fee: 0,
+            refund: 0
+        };
+
+        // Save the input object to a JSON file at relative path "../circuit_input"
+        const outputPath = path.join(__dirname, "../circuit_input/inTransfer_2048_const_65537.json");
+        fs.writeFileSync(outputPath, JSON.stringify(input, null, 2));
+
+        const witness = await circuit.calculateWitness(input);
+        for (let i = 0; i < 32; i++) {
+            expect(witness[i + 1]).to.equal(mintC_array[i]);
+        }
+        await circuit.checkConstraints(witness);
+    });
+});
