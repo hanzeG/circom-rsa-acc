@@ -13,7 +13,7 @@ template Setup(CHUNK_SIZE, CHUNK_NUMBER, BITS) {
     
     signal output A[CHUNK_NUMBER];  // public signal
 
-    // todo: primality check for secret, p, q, p*q=N, g
+    // TODO: primality check for secret, p, q, p*q=N, g
 
     // pow mod to generate A
     component pm = PowerModAnyExp(CHUNK_SIZE, CHUNK_NUMBER, BITS);
