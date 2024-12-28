@@ -34,7 +34,7 @@ template SquareAndMultiply(CHUNK_SIZE, CHUNK_NUMBER) {
     }
 }
 
-// PowerModBITS template
+// PowerMod with any bigInt template
 template PowerModAnyExp(CHUNK_SIZE, CHUNK_NUMBER, BITS) {
     signal input base[CHUNK_NUMBER];
     signal input exp;
@@ -81,28 +81,46 @@ template PowerModAnyExp(CHUNK_SIZE, CHUNK_NUMBER, BITS) {
     }
 }
 
-// Template for proving witness knowledge and verifying membership proof of a secret
-template VerifyWitness(CHUNK_SIZE, CHUNK_NUMBER, BITS) {
+// PowerMod with any bigInt template with exp bits array, for Rabin-Miller check
+template PowerModAnyExpBits(CHUNK_SIZE, CHUNK_NUMBER, BITS) {
+    signal input base[CHUNK_NUMBER];
+    signal input exp[BITS];
     signal input modulus[CHUNK_NUMBER];
-    signal input witness[CHUNK_NUMBER];
-    signal input secret;
-    signal input target[CHUNK_NUMBER];
-
-    signal output verification;
-
-    component pm = PowerModAnyExp(CHUNK_SIZE, CHUNK_NUMBER, BITS);
-    for (var i = 0; i < CHUNK_NUMBER; i++) {
-        pm.base[i] <== witness[i];
-        pm.modulus[i] <== modulus[i];
-    }
-    pm.exp <== secret;
-
-    var counter = 0;
-
-    for (var i = 0; i < CHUNK_NUMBER; i++) {
-        target[i] === pm.out[i];
-        counter++;
+    
+    signal output out[CHUNK_NUMBER];
+    
+    // Initialize current0 to 1
+    signal current0[CHUNK_NUMBER];
+    current0[0] <== 1;
+    for (var j = 1; j < CHUNK_NUMBER; j++) {
+        current0[j] <== 0;
     }
 
-    verification <== counter;
+    // Define an array of step components
+    component step[BITS];
+
+    for (var i = 0; i < BITS; i++) {
+        step[i] = SquareAndMultiply(CHUNK_SIZE, CHUNK_NUMBER);
+        
+        // Assign input signals for each step
+        for (var j = 0; j < CHUNK_NUMBER; j++) {
+            if (i == 0) {
+                // For the first step, current is current0
+                step[i].current[j] <== current0[j];
+            } else {
+                // For other steps, current is the next of the previous step
+                step[i].current[j] <== step[i-1].next[j];
+            }
+            step[i].base[j] <== base[j];
+            step[i].modulus[j] <== modulus[j];
+        }
+
+        // Assign the current exponent bit
+        step[i].bit <== exp[BITS - i - 1];
+    }
+
+    // Final output is assigned from the next of the last step
+    for (var j = 0; j < CHUNK_NUMBER; j++) {
+        out[j] <== step[BITS - 1].next[j];
+    }
 }
