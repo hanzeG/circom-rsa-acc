@@ -8,11 +8,11 @@
     },
     "scripts": {
         "test": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/**/*.js'",
-        "test_2048": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_2048.js'",
-        "test_1024": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_1024.js'",
-        "test_circom_1024_65537": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/test_circom_1024_65537.js'",
         "circom_mod_pow": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/circom_mod_pow.test.js'",
-        "primality": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/primality.test.js'"
+        "primality": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/primality.test.js'",
+        "poseidon2": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/poseidon2.test.js'",
+        "circom_full_1024_const_65537": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/circom_full_1024_const_65537.test.js'",
+        "circom_full_2048_const_65537": "NODE_OPTIONS=--max_old_space_size=56000 mocha -r ts-node/register 'test/circom_full_2048_const_65537.test.js'"
     },
     "keywords": [
         "rsa",
@@ -42,6 +42,7 @@
         "bigint-crypto-utils": "^3.3.0",
         "bn.js": "^5.2.1",
         "circomlibjs": "^0.1.7",
-        "ffjavascript": "^0.3.1"
+        "ffjavascript": "^0.3.1",
+        "poseidon2": "^0.4.2"
     }
 }
