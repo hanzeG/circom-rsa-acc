@@ -2,4 +2,4 @@ pragma circom 2.0.0;
 
 include "../../circuits/bsrp_spend.circom";
 
-component main = Spend(64, 32, 128, 20);
+component main = Spend(64, 32, 20);
