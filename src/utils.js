@@ -1,10 +1,48 @@
 const buildPoseidon = require("circomlibjs").buildPoseidonOpt;
 const { randBetween } = require('bigint-crypto-utils');
+const poseidon2Constants = require("./poseidon2_constants.js");
+const { utils, getCurveFromName } = require("ffjavascript");
+const { MAT_DIAG3_M_1, MAT_INTERNAL3, RC3 } = utils.unstringifyBigInts(poseidon2Constants);
+const { Poseidon2, F1Field } = require("poseidon2");
 
 async function poseidon_hash(preimage) {
     const poseidonHash = await buildPoseidon(); // Initialize Poseidon hash function
     const hash = poseidonHash.F.toObject(poseidonHash(preimage));
     return hash;
+}
+
+async function poseidon2_hash(preimage) {
+    const prime = await getCurveFromName("bn128", true);
+    const F = new F1Field(prime.r);
+    const poseidon2 = new Poseidon2(
+        getPoseidon2Params(3, 5, 8, 56, MAT_DIAG3_M_1, MAT_INTERNAL3, RC3), F
+    );
+    return poseidon2.permute(preimage.map(x => BigInt(x)));
+}
+
+// call this function with your parameters from sage/horizen labs' precomputed constants
+function getPoseidon2Params(
+    t,
+    d,
+    rounds_f,
+    rounds_p,
+    mat_internal_diag_m_1,
+    mat_internal,
+    round_constants
+) {
+    const r = rounds_f / 2;
+    const rounds = rounds_f + rounds_p;
+    return {
+        t: t,
+        d: d,
+        rounds_f_beginning: r,
+        rounds_p: rounds_p,
+        rounds_f_end: r,
+        rounds: rounds,
+        mat_internal_diag_m_1: mat_internal_diag_m_1,
+        _mat_internal: mat_internal,
+        round_constants: round_constants,
+    };
 }
 
 function bigint_to_array(n, k, x) {
@@ -47,8 +85,8 @@ function generateRabinMillerInput(N, k) {
         if (N <= 4n) {
             // When n <= 4, a must be 2
             a.push(2n);
-        } else if (N > 2n ** 64n) {
-            a.push(randBetween(2n ** 64n, 2n));
+        } else if (N > 2n ** 16n) {
+            a.push(randBetween(2n ** 16n, 2n));
         }
         else {
             a.push(randBetween(N - 2n, 2n));
@@ -71,10 +109,27 @@ function bigintToBitsArray(bigint, bitLength) {
     return bits;
 }
 
+function rotateRight(arr, positions) {
+    const len = arr.length;
+    const offset = positions % len;
+    if (offset === 0) return arr.slice();
+
+    return arr.slice(-offset).concat(arr.slice(0, len - offset));
+}
+
+function swap(arr, index1, index2) {
+    let newArr = [...arr];
+    [newArr[index1], newArr[index2]] = [newArr[index2], newArr[index1]];
+
+    return newArr;
+}
 
 module.exports = {
     bigint_to_array,
     generateRabinMillerInput,
     poseidon_hash,
-    bigintToBitsArray
+    poseidon2_hash,
+    bigintToBitsArray,
+    rotateRight,
+    swap
 }
